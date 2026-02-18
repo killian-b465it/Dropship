@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winning Products — DropLaunch</title>
+    <meta name="description"
+        content="Discover today's winning dropshipping products. Curated hot picks with high sales potential.">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .winning-hero {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(245, 158, 11, 0.1));
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .winning-hero-icon {
+            font-size: 48px;
+        }
+
+        .weekly-picks {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .winning-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .winning-card:hover {
+            border-color: rgba(239, 68, 68, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.1);
+        }
+
+        .winning-rank {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ef4444, #f59e0b);
+            color: white;
+            font-size: 14px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .winning-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .winning-body {
+            padding: 14px;
+        }
+
+        .winning-name {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .winning-niche {
+            font-size: 11px;
+            color: var(--accent-teal);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 10px;
+        }
+
+        .winning-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .wm {
+            text-align: center;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 8px 4px;
+        }
+
+        .wm-val {
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .wm-lbl {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .trend-up {
+            color: var(--accent-green);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .cat-tab {
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .cat-tab.active,
+        .cat-tab:hover {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay-bg" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">🚀</div><span class="logo-text">DropLaunch</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Research</div>
+            <a href="index.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+            <a href="products.html" class="nav-item"><span class="nav-icon">🔍</span> Product Research</a>
+            <a href="winning.html" class="nav-item active"><span class="nav-icon">🔥</span> Winning Products <span
+                    class="nav-badge">HOT</span></a>
+            <a href="niche.html" class="nav-item"><span class="nav-icon">🎯</span> Niche Finder</a>
+            <div class="nav-section-label">Intelligence</div>
+            <a href="competitors.html" class="nav-item"><span class="nav-icon">🏪</span> Competitor Analysis</a>
+            <a href="ads.html" class="nav-item"><span class="nav-icon">📢</span> Ad Library</a>
+            <div class="nav-section-label">My Business</div>
+            <a href="store-setup.html" class="nav-item"><span class="nav-icon">🔗</span> Store Setup</a>
+            <a href="suppliers.html" class="nav-item"><span class="nav-icon">📦</span> Suppliers</a>
+            <a href="orders.html" class="nav-item"><span class="nav-icon">🚚</span> Orders</a>
+            <a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a>
+            <a href="mystore.html" class="nav-item"><span class="nav-icon">🛒</span> My Store</a>
+            <a href="calculator.html" class="nav-item"><span class="nav-icon">🧮</span> Calculator</a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                <span class="nav-icon theme-icon">☀️</span><span class="theme-label">Light Mode</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            <h1 class="topbar-title">🔥 Winning Products</h1>
+            <div class="topbar-search"><input type="text" placeholder="Search products..."></div>
+            <div class="topbar-actions">
+                <button class="btn-icon">🔔</button>
+                <div class="avatar">D</div>
+            </div>
+        </header>
+
+        <main class="page-content">
+            <div class="winning-hero">
+                <div class="winning-hero-icon">🏆</div>
+                <div>
+                    <div style="font-size:22px;font-weight:800;margin-bottom:4px;">This Week's Winning Products</div>
+                    <div style="color:var(--text-secondary);font-size:14px;">Curated products with proven sales data,
+                        high margins, and growing demand. Updated weekly.</div>
+                </div>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="category-tabs" id="categoryTabs">
+                <button class="cat-tab active" data-cat="all" onclick="filterCat(this,'all')">🔥 All</button>
+                <button class="cat-tab" data-cat="Health & Wellness" onclick="filterCat(this,'Health & Wellness')">💊
+                    Health</button>
+                <button class="cat-tab" data-cat="Tech Gadgets" onclick="filterCat(this,'Tech Gadgets')">⚡ Tech</button>
+                <button class="cat-tab" data-cat="Pet Supplies" onclick="filterCat(this,'Pet Supplies')">🐾
+                    Pets</button>
+                <button class="cat-tab" data-cat="Fitness" onclick="filterCat(this,'Fitness')">💪 Fitness</button>
+                <button class="cat-tab" data-cat="Beauty & Skincare" onclick="filterCat(this,'Beauty & Skincare')">✨
+                    Beauty</button>
+                <button class="cat-tab" data-cat="Kitchen" onclick="filterCat(this,'Kitchen')">🍳 Kitchen</button>
+            </div>
+
+            <div class="section-header mb-3">
+                <div>
+                    <div class="section-title">🏆 Top Picks</div>
+                    <div class="section-subtitle">Ranked by revenue potential</div>
+                </div>
+                <span class="tag tag-red" id="winningCount">8 products</span>
+            </div>
+
+            <div class="weekly-picks" id="winningGrid"></div>
+        </main>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/winning.js"></script>
+</body>
+
+</html>

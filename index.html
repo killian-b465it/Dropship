@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DropLaunch — Free Dropshipping Research Platform</title>
+  <meta name="description"
+    content="Free dropshipping research platform. Find winning products, analyze competitors, explore niches, and build your store.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(6, 182, 212, 0.1));
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-title {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .hero-subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+      max-width: 400px;
+      line-height: 1.6;
+    }
+
+    .hero-emoji {
+      font-size: 64px;
+    }
+
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .quick-link {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+    }
+
+    .quick-link:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .quick-link-icon {
+      font-size: 28px;
+    }
+
+    .quick-link-label {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .quick-link-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    .product-of-day {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .pod-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .pod-body {
+      padding: 16px;
+    }
+
+    .pod-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-orange);
+      margin-bottom: 6px;
+    }
+
+    .pod-name {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .pod-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .pod-stat {
+      text-align: center;
+    }
+
+    .pod-stat-val {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .pod-stat-lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .activity-text {
+      flex: 1;
+      font-size: 13px;
+    }
+
+    .activity-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero-emoji {
+        display: none;
+      }
+
+      .hero-title {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay-bg" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🚀</div>
+      <span class="logo-text">DropLaunch</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Research</div>
+      <a href="index.html" class="nav-item active"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="products.html" class="nav-item"><span class="nav-icon">🔍</span> Product Research</a>
+      <a href="winning.html" class="nav-item"><span class="nav-icon">🔥</span> Winning Products <span
+          class="nav-badge">HOT</span></a>
+      <a href="niche.html" class="nav-item"><span class="nav-icon">🎯</span> Niche Finder</a>
+      <div class="nav-section-label">Intelligence</div>
+      <a href="competitors.html" class="nav-item"><span class="nav-icon">🏪</span> Competitor Analysis</a>
+      <a href="ads.html" class="nav-item"><span class="nav-icon">📢</span> Ad Library</a>
+      <div class="nav-section-label">My Business</div>
+      <a href="store-setup.html" class="nav-item"><span class="nav-icon">🔗</span> Store Setup</a>
+      <a href="suppliers.html" class="nav-item"><span class="nav-icon">📦</span> Suppliers</a>
+      <a href="orders.html" class="nav-item"><span class="nav-icon">🚚</span> Orders</a>
+      <a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a>
+      <a href="mystore.html" class="nav-item"><span class="nav-icon">🛒</span> My Store</a>
+      <a href="calculator.html" class="nav-item"><span class="nav-icon">🧮</span> Calculator</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <span class="nav-icon theme-icon">☀️</span>
+        <span class="theme-label">Light Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header class="topbar">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <h1 class="topbar-title">Dashboard</h1>
+      <div class="topbar-search">
+        <input type="text" placeholder="Search products, niches..." id="globalSearch">
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-icon" title="Notifications">🔔</button>
+        <div class="avatar" title="Profile">D</div>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <!-- Hero Banner -->
+      <div class="hero-banner">
+        <div>
+          <div class="hero-title">Welcome to DropLaunch 🚀</div>
+          <div class="hero-subtitle">Your free all-in-one dropshipping research platform. Find winning products, spy on
+            competitors, and discover profitable niches — all for free.</div>
+          <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="products.html" class="btn btn-primary">🔍 Start Research</a>
+            <a href="winning.html" class="btn btn-secondary">🔥 Winning Products</a>
+          </div>
+        </div>
+        <div class="hero-emoji">🛍️</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(124,58,237,0.15)">🔍</div>
+          <div class="stat-value" id="statProducts">16</div>
+          <div class="stat-label">Products in Database</div>
+          <div class="stat-change up">↑ +3 this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(6,182,212,0.15)">🎯</div>
+          <div class="stat-value">12</div>
+          <div class="stat-label">Niches Available</div>
+          <div class="stat-change up">↑ All trending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(16,185,129,0.15)">🛒</div>
+          <div class="stat-value" id="statSaved">0</div>
+          <div class="stat-label">Saved Products</div>
+          <div class="stat-change up">↑ My Store</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(245,158,11,0.15)">📢</div>
+          <div class="stat-value">8</div>
+          <div class="stat-label">Ads in Library</div>
+          <div class="stat-change up">↑ Facebook & TikTok</div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="section-header mb-3">
+        <div>
+          <div class="section-title">Quick Access</div>
+          <div class="section-subtitle">Jump to any tool instantly</div>
+        </div>
+      </div>
+      <div class="quick-links">
+        <a href="products.html" class="quick-link">
+          <div class="quick-link-icon">🔍</div>
+          <div class="quick-link-label">Product Research</div>
+          <div class="quick-link-desc">Filter 16+ products</div>
+        </a>
+        <a href="winning.html" class="quick-link">
+          <div class="quick-link-icon">🔥</div>
+          <div class="quick-link-label">Winning Products</div>
+          <div class="quick-link-desc">Curated hot picks</div>
+        </a>
+        <a href="niche.html" class="quick-link">
+          <div class="quick-link-icon">🎯</div>
+          <div class="quick-link-label">Niche Finder</div>
+          <div class="quick-link-desc">12 profitable niches</div>
+        </a>
+        <a href="competitors.html" class="quick-link">
+          <div class="quick-link-icon">🏪</div>
+          <div class="quick-link-label">Competitor Analysis</div>
+          <div class="quick-link-desc">Spy on top stores</div>
+        </a>
+        <a href="ads.html" class="quick-link">
+          <div class="quick-link-icon">📢</div>
+          <div class="quick-link-label">Ad Library</div>
+          <div class="quick-link-desc">8 winning ads</div>
+        </a>
+        <a href="store-setup.html" class="quick-link">
+          <div class="quick-link-icon">🔗</div>
+          <div class="quick-link-label">Store Setup</div>
+          <div class="quick-link-desc">Shopify + suppliers</div>
+        </a>
+        <a href="suppliers.html" class="quick-link">
+          <div class="quick-link-icon">📦</div>
+          <div class="quick-link-label">Suppliers</div>
+          <div class="quick-link-desc">Connect 6 suppliers</div>
+        </a>
+        <a href="orders.html" class="quick-link">
+          <div class="quick-link-icon">🚚</div>
+          <div class="quick-link-label">Orders</div>
+          <div class="quick-link-desc">Track fulfillment</div>
+        </a>
+        <a href="analytics.html" class="quick-link">
+          <div class="quick-link-icon">📈</div>
+          <div class="quick-link-label">Analytics</div>
+          <div class="quick-link-desc">Revenue & profit</div>
+        </a>
+        <a href="mystore.html" class="quick-link">
+          <div class="quick-link-icon">🛒</div>
+          <div class="quick-link-label">My Store</div>
+          <div class="quick-link-desc">Saved products</div>
+        </a>
+        <a href="calculator.html" class="quick-link">
+          <div class="quick-link-icon">🧮</div>
+          <div class="quick-link-label">Calculator</div>
+          <div class="quick-link-desc">Profit & ROAS</div>
+        </a>
+      </div>
+
+      <!-- Dashboard Grid -->
+      <div class="dashboard-grid">
+        <!-- Product of the Day -->
+        <div>
+          <div class="section-header mb-3">
+            <div class="section-title">⭐ Product of the Day</div>
+            <span class="tag tag-orange">Daily Pick</span>
+          </div>
+          <div class="product-of-day">
+            <img src="https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=800&h=300&fit=crop"
+              alt="Resistance Bands" class="pod-img">
+            <div class="pod-body">
+              <div class="pod-label">🔥 Today's Winner</div>
+              <div class="pod-name">Resistance Bands Set (11-piece)</div>
+              <div class="pod-stats">
+                <div class="pod-stat">
+                  <div class="pod-stat-val text-green">$29.99</div>
+                  <div class="pod-stat-lbl">Sell Price</div>
+                </div>
+                <div class="pod-stat">
+                  <div class="pod-stat-val text-purple">8,920</div>
+                  <div class="pod-stat-lbl">Monthly Sales</div>
+                </div>
+                <div class="pod-stat">
+                  <div class="pod-stat-val text-teal">70%</div>
+                  <div class="pod-stat-lbl">Margin</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <a href="products.html" class="btn btn-primary btn-sm">View Details</a>
+                <button class="btn btn-secondary btn-sm" onclick="savePOD()">💾 Save to Store</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div>
+          <div class="section-header mb-3">
+            <div class="section-title">Recent Activity</div>
+          </div>
+          <div class="card">
+            <div class="activity-list" id="activityList">
+              <div class="activity-item">
+                <div class="activity-icon" style="background:rgba(124,58,237,0.15)">🔍</div>
+                <div>
+                  <div class="activity-text font-semibold">Platform launched!</div>
+                  <div class="activity-time">Start exploring products</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon" style="background:rgba(6,182,212,0.15)">🎯</div>
+                <div>
+                  <div class="activity-text font-semibold">12 niches available</div>
+                  <div class="activity-time">Find your perfect niche</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon" style="background:rgba(16,185,129,0.15)">🔥</div>
+                <div>
+                  <div class="activity-text font-semibold">Hot products updated</div>
+                  <div class="activity-time">Check winning products</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon" style="background:rgba(245,158,11,0.15)">📢</div>
+                <div>
+                  <div class="activity-text font-semibold">8 new ads in library</div>
+                  <div class="activity-time">Get ad inspiration</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Niches -->
+          <div class="section-header mb-3" style="margin-top:20px;">
+            <div class="section-title">Top Niches</div>
+            <a href="niche.html" class="btn btn-secondary btn-sm">View All</a>
+          </div>
+          <div class="card">
+            <div id="topNiches"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Update saved count
+    document.getElementById('statSaved').textContent = getSavedProducts().length;
+
+    // Global search redirect
+    document.getElementById('globalSearch').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.target.value.trim()) {
+        window.location.href = `products.html?search=${encodeURIComponent(e.target.value.trim())}`;
+      }
+    });
+
+    // Save product of the day
+    function savePOD() {
+      const pod = PRODUCTS.find(p => p.id === 6);
+      if (pod) {
+        saveProduct(pod);
+        document.getElementById('statSaved').textContent = getSavedProducts().length;
+      }
+    }
+
+    // Render top niches
+    const topNiches = NICHES_DATA.sort((a, b) => b.trendScore - a.trendScore).slice(0, 4);
+    document.getElementById('topNiches').innerHTML = topNiches.map(n => `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:22px;">${n.icon}</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;">${n.name}</div>
+          <div class="progress-bar" style="margin-top:4px;">
+            <div class="progress-fill" style="width:${n.trendScore}%"></div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--accent-green);">${n.growth}</div>
+      </div>
+    `).join('').replace(/border-bottom:1px solid var\(--border\);">(?=[^<]*<\/div>\s*<\/div>\s*$)/, '>');
+  </script>
+</body>
+
+</html>

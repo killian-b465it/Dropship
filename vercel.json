@@ -1,0 +1,27 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/products", "destination": "/products.html" },
+    { "source": "/winning", "destination": "/winning.html" },
+    { "source": "/niche", "destination": "/niche.html" },
+    { "source": "/competitors", "destination": "/competitors.html" },
+    { "source": "/ads", "destination": "/ads.html" },
+    { "source": "/mystore", "destination": "/mystore.html" },
+    { "source": "/store-setup", "destination": "/store-setup.html" },
+    { "source": "/suppliers", "destination": "/suppliers.html" },
+    { "source": "/orders", "destination": "/orders.html" },
+    { "source": "/analytics", "destination": "/analytics.html" },
+    { "source": "/calculator", "destination": "/calculator.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Setup & Shopify — DropLaunch</title>
+    <meta name="description"
+        content="Connect your Shopify store, set up your dropshipping business, and manage integrations all in one place.">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .setup-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .step-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-teal));
+            color: white;
+            font-size: 14px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .step-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .step-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .step-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-done {
+            background: var(--accent-green);
+        }
+
+        .status-pending {
+            background: var(--accent-orange);
+        }
+
+        .status-locked {
+            background: var(--text-muted);
+        }
+
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .platform-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .platform-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .platform-card.recommended {
+            border-color: rgba(124, 58, 237, 0.4);
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .platform-logo {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .platform-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .platform-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .recommended-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent-purple);
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .check-done {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+        }
+
+        .check-todo {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .check-text {
+            flex: 1;
+        }
+
+        .check-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .check-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .shopify-connect-box {
+            background: linear-gradient(135deg, rgba(150, 191, 71, 0.1), rgba(150, 191, 71, 0.05));
+            border: 1px solid rgba(150, 191, 71, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .shopify-logo {
+            font-size: 52px;
+        }
+
+        .shopify-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .shopify-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+
+        .shopify-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-shopify {
+            background: #96bf47;
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(150, 191, 71, 0.3);
+        }
+
+        .btn-shopify:hover {
+            background: #7da33a;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(150, 191, 71, 0.4);
+        }
+
+        @media (max-width: 600px) {
+            .shopify-connect-box {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .shopify-btns {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay-bg" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">🚀</div><span class="logo-text">DropLaunch</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Research</div>
+            <a href="index.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+            <a href="products.html" class="nav-item"><span class="nav-icon">🔍</span> Product Research</a>
+            <a href="winning.html" class="nav-item"><span class="nav-icon">🔥</span> Winning Products <span
+                    class="nav-badge">HOT</span></a>
+            <a href="niche.html" class="nav-item"><span class="nav-icon">🎯</span> Niche Finder</a>
+            <div class="nav-section-label">Intelligence</div>
+            <a href="competitors.html" class="nav-item"><span class="nav-icon">🏪</span> Competitor Analysis</a>
+            <a href="ads.html" class="nav-item"><span class="nav-icon">📢</span> Ad Library</a>
+            <div class="nav-section-label">My Business</div>
+            <a href="store-setup.html" class="nav-item active"><span class="nav-icon">🔗</span> Store Setup</a>
+            <a href="suppliers.html" class="nav-item"><span class="nav-icon">📦</span> Suppliers</a>
+            <a href="orders.html" class="nav-item"><span class="nav-icon">🚚</span> Orders</a>
+            <a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a>
+            <a href="mystore.html" class="nav-item"><span class="nav-icon">🛒</span> My Store</a>
+            <a href="calculator.html" class="nav-item"><span class="nav-icon">🧮</span> Calculator</a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                <span class="nav-icon theme-icon">☀️</span><span class="theme-label">Light Mode</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            <h1 class="topbar-title">Store Setup</h1>
+            <div class="topbar-search"><input type="text" placeholder="Search..."></div>
+            <div class="topbar-actions">
+                <button class="btn-icon">🔔</button>
+                <div class="avatar">D</div>
+            </div>
+        </header>
+
+        <main class="page-content">
+
+            <!-- Shopify Connect Box -->
+            <div class="shopify-connect-box">
+                <div class="shopify-logo">🛍️</div>
+                <div style="flex:1;">
+                    <div class="shopify-title">Connect Your Shopify Store</div>
+                    <div class="shopify-desc">Shopify is the #1 platform for dropshipping. Create your store in minutes,
+                        then import products directly from DropLaunch with one click.</div>
+                    <div class="shopify-btns">
+                        <a href="https://www.shopify.com/free-trial" target="_blank" class="btn btn-shopify">🛍️ Start
+                            Free Trial on Shopify</a>
+                        <a href="https://apps.shopify.com/dsers" target="_blank" class="btn btn-secondary">⚙️ Get DSers
+                            (Free Fulfillment)</a>
+                        <a href="https://apps.shopify.com/oberlo" target="_blank" class="btn btn-secondary">📦 Get
+                            AutoDS</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Setup Steps -->
+            <div class="section-header mb-3">
+                <div class="section-title">🗺️ Your Setup Roadmap</div>
+                <div class="section-subtitle">Follow these steps to launch your dropshipping store</div>
+            </div>
+            <div class="setup-steps">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Create Your Shopify Store</div>
+                    <div class="step-desc">Sign up for Shopify's free trial. Choose a store name, pick a theme, and set
+                        up your payment gateway (Shopify Payments or PayPal).</div>
+                    <a href="https://www.shopify.com/free-trial" target="_blank" class="btn btn-shopify btn-sm">Start
+                        Free →</a>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Install a Supplier App</div>
+                    <div class="step-desc">Install DSers (free) or AutoDS to connect AliExpress/CJ Dropshipping to your
+                        store. This automates order fulfillment.</div>
+                    <a href="suppliers.html" class="btn btn-primary btn-sm">Browse Suppliers →</a>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Research Winning Products</div>
+                    <div class="step-desc">Use DropLaunch to find products with high demand, low competition, and good
+                        margins. Save them to your store list.</div>
+                    <a href="products.html" class="btn btn-primary btn-sm">Find Products →</a>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Import Products to Shopify</div>
+                    <div class="step-desc">Use DSers or AutoDS to import your chosen products to Shopify. Write
+                        compelling descriptions and set your sell price.</div>
+                    <a href="https://help.dsers.com/en/articles/3023954-how-to-import-products-from-aliexpress"
+                        target="_blank" class="btn btn-secondary btn-sm">Import Guide →</a>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">5</div>
+                    <div class="step-title">Set Up Facebook/TikTok Ads</div>
+                    <div class="step-desc">Create a Facebook Business account and TikTok Ads account. Study winning ads
+                        in the Ad Library, then create your first campaign.</div>
+                    <a href="ads.html" class="btn btn-primary btn-sm">View Ad Library →</a>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">6</div>
+                    <div class="step-title">Track Orders & Scale</div>
+                    <div class="step-desc">Monitor orders in the Orders tab, track profits in Analytics, and double down
+                        on your best-performing products.</div>
+                    <a href="analytics.html" class="btn btn-primary btn-sm">View Analytics →</a>
+                </div>
+            </div>
+
+            <!-- Platform Comparison -->
+            <div class="section-header mb-3">
+                <div class="section-title">🏪 Choose Your Platform</div>
+                <div class="section-subtitle">We recommend Shopify for beginners</div>
+            </div>
+            <div class="platform-grid">
+                <div class="platform-card recommended" style="position:relative;">
+                    <div class="recommended-badge">⭐ Recommended</div>
+                    <div class="platform-logo">🛍️</div>
+                    <div class="platform-name">Shopify</div>
+                    <div class="platform-desc">Easiest to use, best app ecosystem, built-in payments. $29/mo after
+                        trial.</div>
+                    <a href="https://www.shopify.com/free-trial" target="_blank"
+                        class="btn btn-shopify btn-sm btn-full">Start Free Trial</a>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-logo">🌐</div>
+                    <div class="platform-name">WooCommerce</div>
+                    <div class="platform-desc">Free plugin for WordPress. More control but more technical setup
+                        required.</div>
+                    <a href="https://woocommerce.com" target="_blank" class="btn btn-secondary btn-sm btn-full">Learn
+                        More</a>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-logo">🏬</div>
+                    <div class="platform-name">BigCommerce</div>
+                    <div class="platform-desc">Great for scaling. More built-in features, no transaction fees.</div>
+                    <a href="https://www.bigcommerce.com" target="_blank"
+                        class="btn btn-secondary btn-sm btn-full">Learn More</a>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-logo">🎯</div>
+                    <div class="platform-name">Wix</div>
+                    <div class="platform-desc">Drag-and-drop builder. Good for beginners, limited dropshipping apps.
+                    </div>
+                    <a href="https://www.wix.com" target="_blank" class="btn btn-secondary btn-sm btn-full">Learn
+                        More</a>
+                </div>
+            </div>
+
+            <!-- Essential Apps -->
+            <div class="section-header mb-3">
+                <div class="section-title">⚙️ Essential Shopify Apps</div>
+                <div class="section-subtitle">Install these to run a professional dropshipping store</div>
+            </div>
+            <div class="card">
+                <div class="checklist">
+                    ${[
+                    { icon: '📦', title: 'DSers — Order Fulfillment', sub: 'Free. Auto-fulfill orders from AliExpress
+                    with one click.', link: 'https://apps.shopify.com/dsers', tag: 'Free' },
+                    { icon: '📧', title: 'Klaviyo — Email Marketing', sub: 'Recover abandoned carts and send promotional
+                    emails. Free up to 500 contacts.', link: 'https://apps.shopify.com/klaviyo-email-marketing', tag:
+                    'Free' },
+                    { icon: '⭐', title: 'Loox — Product Reviews', sub: 'Collect photo reviews automatically. Builds
+                    trust and increases conversions.', link: 'https://apps.shopify.com/loox', tag: '$9.99/mo' },
+                    { icon: '🔄', title: 'ReConvert — Post-Purchase Upsell', sub: 'Show upsell offers after checkout to
+                    increase average order value.', link: 'https://apps.shopify.com/reconvert-upsell-cross-sell', tag:
+                    'Free plan' },
+                    { icon: '🚚', title: 'Aftership — Order Tracking', sub: 'Branded tracking page so customers can
+                    track their orders.', link: 'https://apps.shopify.com/aftership', tag: 'Free plan' },
+                    { icon: '💬', title: 'Tidio — Live Chat', sub: 'AI-powered live chat and chatbot for customer
+                    support.', link: 'https://apps.shopify.com/tidio-chat', tag: 'Free plan' },
+                    ].map(a => `
+                    <div class="checklist-item">
+                        <div class="check-icon check-todo">${a.icon}</div>
+                        <div class="check-text">
+                            <div class="check-title">${a.title} <span class="tag tag-green"
+                                    style="font-size:10px;">${a.tag}</span></div>
+                            <div class="check-sub">${a.sub}</div>
+                        </div>
+                        <a href="${a.link}" target="_blank" class="btn btn-secondary btn-sm">Install</a>
+                    </div>
+                    `).join('')}
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

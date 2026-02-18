@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Niche Finder — DropLaunch</title>
+    <meta name="description"
+        content="Discover profitable dropshipping niches. Analyze competition, margins, and trend scores to find your perfect market.">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .niches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .niche-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .niche-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--niche-color, var(--accent-purple));
+            opacity: 0.8;
+        }
+
+        .niche-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .niche-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .niche-name {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .niche-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .niche-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .nm {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .nm-val {
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .nm-lbl {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .trend-score-wrap {
+            margin-bottom: 12px;
+        }
+
+        .trend-score-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .comp-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .comp-low {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .comp-medium {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .comp-high {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .niche-detail {
+            display: none;
+        }
+
+        .niche-detail.show {
+            display: block;
+        }
+
+        .detail-back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .detail-back:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay-bg" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">🚀</div><span class="logo-text">DropLaunch</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Research</div>
+            <a href="index.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+            <a href="products.html" class="nav-item"><span class="nav-icon">🔍</span> Product Research</a>
+            <a href="winning.html" class="nav-item"><span class="nav-icon">🔥</span> Winning Products <span
+                    class="nav-badge">HOT</span></a>
+            <a href="niche.html" class="nav-item active"><span class="nav-icon">🎯</span> Niche Finder</a>
+            <div class="nav-section-label">Intelligence</div>
+            <a href="competitors.html" class="nav-item"><span class="nav-icon">🏪</span> Competitor Analysis</a>
+            <a href="ads.html" class="nav-item"><span class="nav-icon">📢</span> Ad Library</a>
+            <div class="nav-section-label">My Business</div>
+            <a href="store-setup.html" class="nav-item"><span class="nav-icon">🔗</span> Store Setup</a>
+            <a href="suppliers.html" class="nav-item"><span class="nav-icon">📦</span> Suppliers</a>
+            <a href="orders.html" class="nav-item"><span class="nav-icon">🚚</span> Orders</a>
+            <a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a>
+            <a href="mystore.html" class="nav-item"><span class="nav-icon">🛒</span> My Store</a>
+            <a href="calculator.html" class="nav-item"><span class="nav-icon">🧮</span> Calculator</a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                <span class="nav-icon theme-icon">☀️</span><span class="theme-label">Light Mode</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            <h1 class="topbar-title">Niche Finder</h1>
+            <div class="topbar-search"><input type="text" placeholder="Search niches..."></div>
+            <div class="topbar-actions">
+                <button class="btn-icon">🔔</button>
+                <div class="avatar">D</div>
+            </div>
+        </header>
+
+        <main class="page-content">
+            <!-- Niche List -->
+            <div id="nicheListView">
+                <div class="section-header mb-4">
+                    <div>
+                        <div class="section-title">🎯 Profitable Niches</div>
+                        <div class="section-subtitle">Click any niche to explore its top products</div>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        <select class="filter-select" id="sortNiches" onchange="renderNiches()">
+                            <option value="trend">🔥 By Trend Score</option>
+                            <option value="margin">📈 By Avg Margin</option>
+                            <option value="searches">🔍 By Monthly Searches</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="niches-grid" id="nichesGrid"></div>
+            </div>
+
+            <!-- Niche Detail -->
+            <div id="nicheDetailView" class="niche-detail">
+                <div class="detail-back" onclick="backToNiches()">← Back to All Niches</div>
+                <div id="nicheDetailContent"></div>
+            </div>
+        </main>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/niche.js"></script>
+</body>
+
+</html>

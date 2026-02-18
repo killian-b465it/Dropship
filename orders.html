@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders — DropLaunch</title>
+    <meta name="description"
+        content="Track and manage your dropshipping orders. Monitor fulfillment status and shipping progress.">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .orders-table-wrap {
+            overflow-x: auto;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .orders-table th {
+            background: var(--bg-secondary);
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .orders-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .orders-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .orders-table tr:hover td {
+            background: var(--bg-card-hover);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-processing {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-teal);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .status-shipped {
+            background: rgba(124, 58, 237, 0.15);
+            color: var(--accent-purple-light);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .status-delivered {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-refunded {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .order-id {
+            font-weight: 700;
+            color: var(--accent-purple-light);
+            font-family: monospace;
+        }
+
+        .customer-name {
+            font-weight: 600;
+        }
+
+        .customer-loc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .profit-pos {
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .profit-neg {
+            color: var(--accent-red);
+            font-weight: 700;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-tab {
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-tab.active,
+        .filter-tab:hover {
+            background: rgba(124, 58, 237, 0.15);
+            color: var(--accent-purple-light);
+            border-color: rgba(124, 58, 237, 0.3);
+        }
+
+        .add-order-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .add-order-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay-bg" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">🚀</div><span class="logo-text">DropLaunch</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Research</div>
+            <a href="index.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+            <a href="products.html" class="nav-item"><span class="nav-icon">🔍</span> Product Research</a>
+            <a href="winning.html" class="nav-item"><span class="nav-icon">🔥</span> Winning Products <span
+                    class="nav-badge">HOT</span></a>
+            <a href="niche.html" class="nav-item"><span class="nav-icon">🎯</span> Niche Finder</a>
+            <div class="nav-section-label">Intelligence</div>
+            <a href="competitors.html" class="nav-item"><span class="nav-icon">🏪</span> Competitor Analysis</a>
+            <a href="ads.html" class="nav-item"><span class="nav-icon">📢</span> Ad Library</a>
+            <div class="nav-section-label">My Business</div>
+            <a href="store-setup.html" class="nav-item"><span class="nav-icon">🔗</span> Store Setup</a>
+            <a href="suppliers.html" class="nav-item"><span class="nav-icon">📦</span> Suppliers</a>
+            <a href="orders.html" class="nav-item active"><span class="nav-icon">🚚</span> Orders</a>
+            <a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a>
+            <a href="mystore.html" class="nav-item"><span class="nav-icon">🛒</span> My Store</a>
+            <a href="calculator.html" class="nav-item"><span class="nav-icon">🧮</span> Calculator</a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                <span class="nav-icon theme-icon">☀️</span><span class="theme-label">Light Mode</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            <h1 class="topbar-title">Orders</h1>
+            <div class="topbar-search"><input type="text" placeholder="Search orders..." id="orderSearch"></div>
+            <div class="topbar-actions">
+                <button class="btn-icon">🔔</button>
+                <div class="avatar">D</div>
+            </div>
+        </header>
+
+        <main class="page-content">
+            <!-- Stats -->
+            <div class="stats-grid" id="orderStats"></div>
+
+            <!-- Filters & Actions -->
+            <div
+                style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+                <div class="filter-tabs" id="statusTabs">
+                    <button class="filter-tab active" data-status="all" onclick="filterOrders(this,'all')">All</button>
+                    <button class="filter-tab" data-status="pending" onclick="filterOrders(this,'pending')">⏳
+                        Pending</button>
+                    <button class="filter-tab" data-status="processing" onclick="filterOrders(this,'processing')">⚙️
+                        Processing</button>
+                    <button class="filter-tab" data-status="shipped" onclick="filterOrders(this,'shipped')">🚚
+                        Shipped</button>
+                    <button class="filter-tab" data-status="delivered" onclick="filterOrders(this,'delivered')">✅
+                        Delivered</button>
+                    <button class="filter-tab" data-status="refunded" onclick="filterOrders(this,'refunded')">↩️
+                        Refunded</button>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="openModal('addOrderModal')">+ Add Order</button>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="card orders-table-wrap">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Sale Price</th>
+                            <th>Cost</th>
+                            <th>Profit</th>
+                            <th>Supplier</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Tracking</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersBody"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Order Modal -->
+    <div class="modal-overlay" id="addOrderModal" onclick="if(event.target===this)closeModal('addOrderModal')">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Add New Order</div>
+                <button class="modal-close" onclick="closeModal('addOrderModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="add-order-form">
+                    <div class="input-group" style="margin-bottom:0;">
+                        <label class="input-label">Customer Name</label>
+                        <input type="text" class="text-input" id="newCustomer" placeholder="John Smith">
+                    </div>
+                    <div class="input-group" style="margin-bottom:0;">
+                        <label class="input-label">Location</label>
+                        <input type="text" class="text-input" id="newLocation" placeholder="New York, US">
+                    </div>
+                    <div class="input-group" style="margin-bottom:0;">
+                        <label class="input-label">Product Name</label>
+                        <input type="text" class="text-input" id="newProduct" placeholder="Posture Corrector">
+                    </div>
+                    <div class="input-group" style="margin-bottom:0;">
+                        <label class="input-label">Sale Price ($)</label>
+                        <input type="number" class="text-input" id="newSalePrice" placeholder="39.99" step="0.01">
+                    </div>
+                    <div class="input-group" style="margin-bottom:0;">
+                        <label class="input-label">Cost Price ($)</label>
+                        <input type="number" class="text-input" id="newCostPrice" placeholder="12.50" step="0.01">
+                    </div>
+                    <div class="input-group" style="margin-bottom:0;">
+                        <label class="input-label">Supplier</label>
+                        <select class="text-input" id="newSupplier">
+                            <option>AliExpress</option>
+                            <option>CJ Dropshipping</option>
+                            <option>Spocket</option>
+                            <option>Zendrop</option>
+                            <option>AutoDS</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top:16px;">
+                    <label class="input-label">Tracking Number (optional)</label>
+                    <input type="text" class="text-input" id="newTracking" placeholder="YT2134567890CN">
+                </div>
+                <button class="btn btn-primary btn-full" style="margin-top:16px;" onclick="addOrder()">Add
+                    Order</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/orders.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competitor Analysis — DropLaunch</title>
+    <meta name="description"
+        content="Analyze competitor dropshipping stores. See their top products, revenue, traffic sources, and installed apps.">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .search-hero {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .search-hero h2 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .search-hero p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .store-search-wrap {
+            display: flex;
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .store-search-input {
+            flex: 1;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .store-search-input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+
+        .suggested-stores {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 14px;
+        }
+
+        .store-chip {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+        }
+
+        .store-chip:hover {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple-light);
+        }
+
+        .store-result {
+            display: none;
+        }
+
+        .store-result.show {
+            display: block;
+        }
+
+        .store-header {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(6, 182, 212, 0.05));
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .store-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-teal));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .store-name {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .store-url {
+            font-size: 13px;
+            color: var(--accent-teal);
+        }
+
+        .store-meta {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .store-meta-item {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .top-products-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .top-product-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .top-product-item:last-child {
+            border-bottom: none;
+        }
+
+        .tp-rank {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .tp-name {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .tp-revenue {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .traffic-bar {
+            margin-bottom: 10px;
+        }
+
+        .traffic-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .apps-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .app-chip {
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--accent-purple-light);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay-bg" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">🚀</div><span class="logo-text">DropLaunch</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Research</div>
+            <a href="index.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+            <a href="products.html" class="nav-item"><span class="nav-icon">🔍</span> Product Research</a>
+            <a href="winning.html" class="nav-item"><span class="nav-icon">🔥</span> Winning Products <span
+                    class="nav-badge">HOT</span></a>
+            <a href="niche.html" class="nav-item"><span class="nav-icon">🎯</span> Niche Finder</a>
+            <div class="nav-section-label">Intelligence</div>
+            <a href="competitors.html" class="nav-item active"><span class="nav-icon">🏪</span> Competitor Analysis</a>
+            <a href="ads.html" class="nav-item"><span class="nav-icon">📢</span> Ad Library</a>
+            <div class="nav-section-label">My Business</div>
+            <a href="store-setup.html" class="nav-item"><span class="nav-icon">🔗</span> Store Setup</a>
+            <a href="suppliers.html" class="nav-item"><span class="nav-icon">📦</span> Suppliers</a>
+            <a href="orders.html" class="nav-item"><span class="nav-icon">🚚</span> Orders</a>
+            <a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a>
+            <a href="mystore.html" class="nav-item"><span class="nav-icon">🛒</span> My Store</a>
+            <a href="calculator.html" class="nav-item"><span class="nav-icon">🧮</span> Calculator</a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                <span class="nav-icon theme-icon">☀️</span><span class="theme-label">Light Mode</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            <h1 class="topbar-title">Competitor Analysis</h1>
+            <div class="topbar-search"><input type="text" placeholder="Search stores..."></div>
+            <div class="topbar-actions">
+                <button class="btn-icon">🔔</button>
+                <div class="avatar">D</div>
+            </div>
+        </header>
+
+        <main class="page-content">
+            <!-- Search Hero -->
+            <div class="search-hero">
+                <h2>🏪 Spy on Competitor Stores</h2>
+                <p>Enter a store name to analyze their top products, revenue, traffic sources, and installed apps.</p>
+                <div class="store-search-wrap">
+                    <input type="text" class="store-search-input" id="storeInput"
+                        placeholder="e.g. gymshark, petparadise, techzone..."
+                        onkeydown="if(event.key==='Enter') searchStore()">
+                    <button class="btn btn-primary" onclick="searchStore()">🔍 Analyze</button>
+                </div>
+                <div class="suggested-stores">
+                    <span style="font-size:12px;color:var(--text-muted);align-self:center;">Try:</span>
+                    <span class="store-chip" onclick="loadStore('gymshark')">gymshark</span>
+                    <span class="store-chip" onclick="loadStore('petparadise')">petparadise</span>
+                    <span class="store-chip" onclick="loadStore('techzone')">techzone</span>
+                    <span class="store-chip" onclick="loadStore('glowskin')">glowskin</span>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="store-result" id="storeResult"></div>
+        </main>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/competitors.js"></script>
+</body>
+
+</html>

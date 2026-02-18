@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suppliers — DropLaunch</title>
+    <meta name="description"
+        content="Browse and connect with top dropshipping suppliers. Compare AliExpress, CJ Dropshipping, Spocket, Zendrop, and more.">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .supplier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .supplier-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .supplier-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .supplier-card.connected {
+            border-color: rgba(16, 185, 129, 0.4);
+            background: rgba(16, 185, 129, 0.03);
+        }
+
+        .supplier-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .supplier-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .supplier-name {
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .supplier-type {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .supplier-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .supplier-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .ss {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .ss-val {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .ss-lbl {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .supplier-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 14px;
+        }
+
+        .connected-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .connect-modal-body {
+            padding: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .text-input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .text-input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .comparison-table th {
+            background: var(--bg-secondary);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover td {
+            background: var(--bg-card-hover);
+        }
+
+        .tick {
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .cross {
+            color: var(--accent-red);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay-bg" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">🚀</div><span class="logo-text">DropLaunch</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Research</div>
+            <a href="index.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+            <a href="products.html" class="nav-item"><span class="nav-icon">🔍</span> Product Research</a>
+            <a href="winning.html" class="nav-item"><span class="nav-icon">🔥</span> Winning Products <span
+                    class="nav-badge">HOT</span></a>
+            <a href="niche.html" class="nav-item"><span class="nav-icon">🎯</span> Niche Finder</a>
+            <div class="nav-section-label">Intelligence</div>
+            <a href="competitors.html" class="nav-item"><span class="nav-icon">🏪</span> Competitor Analysis</a>
+            <a href="ads.html" class="nav-item"><span class="nav-icon">📢</span> Ad Library</a>
+            <div class="nav-section-label">My Business</div>
+            <a href="store-setup.html" class="nav-item"><span class="nav-icon">🔗</span> Store Setup</a>
+            <a href="suppliers.html" class="nav-item active"><span class="nav-icon">📦</span> Suppliers</a>
+            <a href="orders.html" class="nav-item"><span class="nav-icon">🚚</span> Orders</a>
+            <a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a>
+            <a href="mystore.html" class="nav-item"><span class="nav-icon">🛒</span> My Store</a>
+            <a href="calculator.html" class="nav-item"><span class="nav-icon">🧮</span> Calculator</a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                <span class="nav-icon theme-icon">☀️</span><span class="theme-label">Light Mode</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            <h1 class="topbar-title">Suppliers</h1>
+            <div class="topbar-search"><input type="text" placeholder="Search suppliers..."></div>
+            <div class="topbar-actions">
+                <button class="btn-icon">🔔</button>
+                <div class="avatar">D</div>
+            </div>
+        </header>
+
+        <main class="page-content">
+            <div class="section-header mb-4">
+                <div>
+                    <div class="section-title">📦 Supplier Directory</div>
+                    <div class="section-subtitle">Connect to suppliers to source and auto-fulfill your products</div>
+                </div>
+                <span class="tag tag-green" id="connectedCount">0 Connected</span>
+            </div>
+
+            <div class="supplier-grid" id="supplierGrid"></div>
+
+            <!-- Comparison Table -->
+            <div class="section-header mb-3">
+                <div class="section-title">📊 Supplier Comparison</div>
+            </div>
+            <div class="card" style="overflow-x:auto;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Supplier</th>
+                            <th>Shipping Time</th>
+                            <th>Product Count</th>
+                            <th>Auto-Fulfill</th>
+                            <th>US Warehouse</th>
+                            <th>Free Plan</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>AliExpress</strong></td>
+                            <td>7–30 days</td>
+                            <td>100M+</td>
+                            <td class="tick">✓</td>
+                            <td class="cross">✗</td>
+                            <td class="tick">✓</td>
+                            <td>Beginners, variety</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CJ Dropshipping</strong></td>
+                            <td>5–15 days</td>
+                            <td>400K+</td>
+                            <td class="tick">✓</td>
+                            <td class="tick">✓</td>
+                            <td class="tick">✓</td>
+                            <td>Faster shipping</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Spocket</strong></td>
+                            <td>2–7 days</td>
+                            <td>100K+</td>
+                            <td class="tick">✓</td>
+                            <td class="tick">✓</td>
+                            <td class="cross">✗</td>
+                            <td>US/EU products</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zendrop</strong></td>
+                            <td>5–10 days</td>
+                            <td>1M+</td>
+                            <td class="tick">✓</td>
+                            <td class="tick">✓</td>
+                            <td class="tick">✓</td>
+                            <td>Branding options</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AutoDS</strong></td>
+                            <td>3–15 days</td>
+                            <td>500M+</td>
+                            <td class="tick">✓</td>
+                            <td class="tick">✓</td>
+                            <td class="cross">✗</td>
+                            <td>Automation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Printful</strong></td>
+                            <td>3–7 days</td>
+                            <td>300+</td>
+                            <td class="tick">✓</td>
+                            <td class="tick">✓</td>
+                            <td class="tick">✓</td>
+                            <td>Print-on-demand</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Connect Modal -->
+    <div class="modal-overlay" id="connectModal" onclick="if(event.target===this)closeModal('connectModal')">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="connectModalTitle">Connect Supplier</div>
+                <button class="modal-close" onclick="closeModal('connectModal')">✕</button>
+            </div>
+            <div class="connect-modal-body" id="connectModalBody"></div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/suppliers.js"></script>
+</body>
+
+</html>
