@@ -1,20 +1,31 @@
 // ===== NICHE FINDER PAGE =====
+import { isProductSaved, saveProduct, removeProduct, getSavedProducts } from './app.js';
+
+let savedProductIds = new Set();
+
+async function init() {
+  const saved = await getSavedProducts();
+  savedProductIds = new Set(saved.map(p => p.id));
+  renderNiches();
+}
 
 function renderNiches() {
-    const sortBy = document.getElementById('sortNiches')?.value || 'trend';
-    const sorted = [...NICHES_DATA].sort((a, b) => {
-        if (sortBy === 'trend') return b.trendScore - a.trendScore;
-        if (sortBy === 'margin') return b.avgMargin - a.avgMargin;
-        if (sortBy === 'searches') return b.monthlySearches - a.monthlySearches;
-        return 0;
-    });
+  const sortBy = document.getElementById('sortNiches')?.value || 'trend';
+  const sorted = [...NICHES_DATA].sort((a, b) => {
+    if (sortBy === 'trend') return b.trendScore - a.trendScore;
+    if (sortBy === 'margin') return b.avgMargin - a.avgMargin;
+    if (sortBy === 'searches') return b.monthlySearches - a.monthlySearches;
+    return 0;
+  });
 
-    const grid = document.getElementById('nichesGrid');
-    grid.innerHTML = sorted.map(n => {
-        const compClass = n.competition === 'Low' ? 'comp-low' : n.competition === 'Medium' ? 'comp-medium' : 'comp-high';
-        const compIcon = n.competition === 'Low' ? '🟢' : n.competition === 'Medium' ? '🟡' : '🔴';
+  const grid = document.getElementById('nichesGrid');
+  if (!grid) return;
 
-        return `
+  grid.innerHTML = sorted.map(n => {
+    const compClass = n.competition === 'Low' ? 'comp-low' : n.competition === 'Medium' ? 'comp-medium' : 'comp-high';
+    const compIcon = n.competition === 'Low' ? '🟢' : n.competition === 'Medium' ? '🟡' : '🔴';
+
+    return `
       <div class="niche-card" style="--niche-color:${n.color}" onclick="openNiche(${n.id})">
         <div class="niche-icon">${n.icon}</div>
         <div class="niche-name">${n.name}</div>
@@ -44,20 +55,21 @@ function renderNiches() {
         </div>
       </div>
     `;
-    }).join('');
+  }).join('');
 }
+window.renderNiches = renderNiches;
 
-function openNiche(nicheId) {
-    const niche = NICHES_DATA.find(n => n.id === nicheId);
-    if (!niche) return;
+window.openNiche = function (nicheId) {
+  const niche = NICHES_DATA.find(n => n.id === nicheId);
+  if (!niche) return;
 
-    document.getElementById('nicheListView').style.display = 'none';
-    document.getElementById('nicheDetailView').classList.add('show');
+  document.getElementById('nicheListView').style.display = 'none';
+  document.getElementById('nicheDetailView').classList.add('show');
 
-    const nicheProducts = PRODUCTS.filter(p => p.niche === niche.name);
-    const compClass = niche.competition === 'Low' ? 'comp-low' : niche.competition === 'Medium' ? 'comp-medium' : 'comp-high';
+  const nicheProducts = PRODUCTS.filter(p => p.niche === niche.name);
+  const compClass = niche.competition === 'Low' ? 'comp-low' : niche.competition === 'Medium' ? 'comp-medium' : 'comp-high';
 
-    document.getElementById('nicheDetailContent').innerHTML = `
+  document.getElementById('nicheDetailContent').innerHTML = `
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
       <div style="font-size:56px;">${niche.icon}</div>
       <div>
@@ -102,8 +114,8 @@ function openNiche(nicheId) {
     ${nicheProducts.length > 0 ? `
       <div class="products-grid">
         ${nicheProducts.map(p => {
-        const saved = isProductSaved(p.id);
-        return `
+    const saved = savedProductIds.has(p.id);
+    return `
             <div class="product-card">
               <div class="product-img-wrap">
                 <img src="${p.image}" alt="${p.name}" loading="lazy">
@@ -125,28 +137,32 @@ function openNiche(nicheId) {
               </div>
             </div>
           `;
-    }).join('')}
+  }).join('')}
       </div>
     ` : `<div class="empty-state"><div class="empty-state-icon">${niche.icon}</div><div class="empty-state-title">No products yet</div><div class="empty-state-text">Check back soon for products in this niche</div></div>`}
   `;
 }
 
-function quickNicheSave(productId, btn) {
-    const product = PRODUCTS.find(p => p.id === productId);
-    if (!product) return;
-    if (isProductSaved(productId)) {
-        removeProduct(productId);
-        btn.innerHTML = '💾 Save to Store';
-        showToast('Removed from My Store', 'info', '🗑️');
-    } else {
-        saveProduct(product);
-        btn.innerHTML = '❤️ Saved';
-    }
+window.quickNicheSave = async function (productId, btn) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  if (!product) return;
+
+  if (savedProductIds.has(productId)) {
+    await removeProduct(productId);
+    savedProductIds.delete(productId);
+    btn.innerHTML = '💾 Save to Store';
+    showToast('Removed from My Store', 'info', '🗑️');
+  } else {
+    await saveProduct(product);
+    savedProductIds.add(productId);
+    btn.innerHTML = '❤️ Saved';
+  }
 }
 
-function backToNiches() {
-    document.getElementById('nicheListView').style.display = '';
-    document.getElementById('nicheDetailView').classList.remove('show');
+window.backToNiches = function () {
+  document.getElementById('nicheListView').style.display = '';
+  document.getElementById('nicheDetailView').classList.remove('show');
 }
 
-document.addEventListener('DOMContentLoaded', renderNiches);
+document.addEventListener('DOMContentLoaded', init);
+

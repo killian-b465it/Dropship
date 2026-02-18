@@ -1,94 +1,112 @@
 // ===== PRODUCT RESEARCH PAGE =====
+import { getSavedProducts, saveProduct, removeProduct, isProductSaved } from './app.js';
 
 let currentSort = 'revenue';
 let currentProducts = [...PRODUCTS];
+let savedProductIds = new Set();
 
-function init() {
-    // Populate niche filter
-    const nicheSelect = document.getElementById('filterNiche');
+async function init() {
+  // Populate niche filter
+  const nicheSelect = document.getElementById('filterNiche');
+  if (nicheSelect) {
     NICHES.forEach(n => {
-        const opt = document.createElement('option');
-        opt.value = n;
-        opt.textContent = n;
-        nicheSelect.appendChild(opt);
+      const opt = document.createElement('option');
+      opt.value = n;
+      opt.textContent = n;
+      nicheSelect.appendChild(opt);
     });
+  }
 
-    // Check URL params for search
-    const params = new URLSearchParams(window.location.search);
-    const searchParam = params.get('search');
-    if (searchParam) {
-        document.getElementById('productSearch').value = searchParam;
-        document.getElementById('searchInput').value = searchParam;
-    }
+  // Check URL params for search
+  const params = new URLSearchParams(window.location.search);
+  const searchParam = params.get('search');
+  if (searchParam) {
+    const productSearch = document.getElementById('productSearch');
+    const searchInput = document.getElementById('searchInput');
+    if (productSearch) productSearch.value = searchParam;
+    if (searchInput) searchInput.value = searchParam;
+  }
 
-    renderProducts();
-    bindFilters();
+  await renderProducts();
+  bindFilters();
 }
 
 function bindFilters() {
-    const debouncedRender = debounce(renderProducts, 250);
-    document.getElementById('productSearch').addEventListener('input', debouncedRender);
-    document.getElementById('searchInput').addEventListener('input', e => {
-        document.getElementById('productSearch').value = e.target.value;
-        debouncedRender();
-    });
-    document.getElementById('filterNiche').addEventListener('change', renderProducts);
-    document.getElementById('filterCompetition').addEventListener('change', renderProducts);
-    document.getElementById('filterMargin').addEventListener('change', renderProducts);
+  const debouncedRender = debounce(renderProducts, 250);
+  document.getElementById('productSearch')?.addEventListener('input', debouncedRender);
+  document.getElementById('searchInput')?.addEventListener('input', e => {
+    const productSearch = document.getElementById('productSearch');
+    if (productSearch) productSearch.value = e.target.value;
+    debouncedRender();
+  });
+  document.getElementById('filterNiche')?.addEventListener('change', renderProducts);
+  document.getElementById('filterCompetition')?.addEventListener('change', renderProducts);
+  document.getElementById('filterMargin')?.addEventListener('change', renderProducts);
 }
 
-function setSort(btn, sort) {
-    currentSort = sort;
-    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderProducts();
+window.setSort = function (btn, sort) {
+  currentSort = sort;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts();
 }
 
 function getFilteredProducts() {
-    const search = (document.getElementById('productSearch')?.value || '').toLowerCase();
-    const niche = document.getElementById('filterNiche')?.value || '';
-    const competition = document.getElementById('filterCompetition')?.value || '';
-    const margin = parseInt(document.getElementById('filterMargin')?.value || '0');
+  const search = (document.getElementById('productSearch')?.value || '').toLowerCase();
+  const niche = document.getElementById('filterNiche')?.value || '';
+  const competition = document.getElementById('filterCompetition')?.value || '';
+  const margin = parseInt(document.getElementById('filterMargin')?.value || '0');
 
-    return PRODUCTS.filter(p => {
-        if (search && !p.name.toLowerCase().includes(search) && !p.niche.toLowerCase().includes(search) && !p.tags.some(t => t.includes(search))) return false;
-        if (niche && p.niche !== niche) return false;
-        if (competition && p.competition !== competition) return false;
-        if (margin && p.margin < margin) return false;
-        return true;
-    }).sort((a, b) => {
-        if (currentSort === 'revenue') return b.revenue - a.revenue;
-        if (currentSort === 'sales') return b.monthlySales - a.monthlySales;
-        if (currentSort === 'margin') return b.margin - a.margin;
-        if (currentSort === 'price') return a.price - b.price;
-        return 0;
-    });
+  return PRODUCTS.filter(p => {
+    if (search && !p.name.toLowerCase().includes(search) && !p.niche.toLowerCase().includes(search) && !p.tags.some(t => t.includes(search))) return false;
+    if (niche && p.niche !== niche) return false;
+    if (competition && p.competition !== competition) return false;
+    if (margin && p.margin < margin) return false;
+    return true;
+  }).sort((a, b) => {
+    if (currentSort === 'revenue') return b.revenue - a.revenue;
+    if (currentSort === 'sales') return b.monthlySales - a.monthlySales;
+    if (currentSort === 'margin') return b.margin - a.margin;
+    if (currentSort === 'price') return a.price - b.price;
+    return 0;
+  });
 }
 
-function renderProducts() {
-    const filtered = getFilteredProducts();
-    const grid = document.getElementById('productsGrid');
-    const count = document.getElementById('resultsCount');
+async function renderProducts() {
+  const grid = document.getElementById('productsGrid');
+  if (!grid) return;
 
-    count.textContent = `${filtered.length} product${filtered.length !== 1 ? 's' : ''}`;
+  // Show loading skeleton or spinner
+  grid.style.opacity = '0.5';
 
-    if (filtered.length === 0) {
-        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+  const [filtered, saved] = await Promise.all([
+    getFilteredProducts(),
+    getSavedProducts()
+  ]);
+
+  savedProductIds = new Set(saved.map(p => p.id));
+
+  const count = document.getElementById('resultsCount');
+  if (count) count.textContent = `${filtered.length} product${filtered.length !== 1 ? 's' : ''}`;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
       <div class="empty-state-icon">🔍</div>
       <div class="empty-state-title">No products found</div>
       <div class="empty-state-text">Try adjusting your filters or search term</div>
     </div>`;
-        return;
-    }
-
+  } else {
     grid.innerHTML = filtered.map(p => renderProductCard(p)).join('');
+  }
+
+  grid.style.opacity = '1';
 }
 
 function renderProductCard(p) {
-    const saved = isProductSaved(p.id);
-    const badgeHtml = p.badges.map(b => `<span class="badge badge-${b}">${b === 'hot' ? '🔥 Hot' : b === 'trending' ? '📈 Trending' : b === 'new' ? '✨ New' : '🏆 Winning'}</span>`).join('');
+  const saved = savedProductIds.has(p.id);
+  const badgeHtml = p.badges.map(b => `<span class="badge badge-${b}">${b === 'hot' ? '🔥 Hot' : b === 'trending' ? '📈 Trending' : b === 'new' ? '✨ New' : '🏆 Winning'}</span>`).join('');
 
-    return `
+  return `
     <div class="product-card" onclick="openProductModal(${p.id})">
       <div class="product-img-wrap">
         <img src="${p.image}" alt="${p.name}" loading="lazy">
@@ -127,30 +145,42 @@ function renderProductCard(p) {
   `;
 }
 
-function toggleSave(productId, btn) {
-    const product = PRODUCTS.find(p => p.id === productId);
-    if (!product) return;
+window.toggleSave = async function (productId, btn) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  if (!product) return;
 
-    if (isProductSaved(productId)) {
-        removeProduct(productId);
-        showToast(`Removed from My Store`, 'info', '🗑️');
-        if (btn) { btn.textContent = '🤍'; btn.classList.remove('saved'); }
-    } else {
-        saveProduct(product);
-        if (btn) { btn.textContent = '❤️'; btn.classList.add('saved'); }
+  if (savedProductIds.has(productId)) {
+    await removeProduct(productId);
+    savedProductIds.delete(productId);
+    showToast(`Removed from My Store`, 'info', '🗑️');
+  } else {
+    await saveProduct(product);
+    savedProductIds.add(productId);
+  }
+
+  // Efficiently update UI without full re-render if possible
+  const cards = document.querySelectorAll(`[onclick*="openProductModal(${productId})"]`);
+  cards.forEach(card => {
+    const saveBtn = card.querySelector('.save-btn');
+    if (saveBtn) {
+      saveBtn.classList.toggle('saved', savedProductIds.has(productId));
+      saveBtn.textContent = savedProductIds.has(productId) ? '❤️' : '🤍';
     }
+    const bottomBtn = card.querySelector('.product-info .btn-secondary');
+    if (bottomBtn) bottomBtn.textContent = savedProductIds.has(productId) ? '❤️' : '💾';
+  });
 }
 
-function openProductModal(productId) {
-    const p = PRODUCTS.find(prod => prod.id === productId);
-    if (!p) return;
+window.openProductModal = async function (productId) {
+  const p = PRODUCTS.find(prod => prod.id === productId);
+  if (!p) return;
 
-    document.getElementById('modalTitle').textContent = p.name;
+  document.getElementById('modalTitle').textContent = p.name;
 
-    const saved = isProductSaved(p.id);
-    const badgeHtml = p.badges.map(b => `<span class="badge badge-${b}">${b === 'hot' ? '🔥 Hot' : b === 'trending' ? '📈 Trending' : b === 'new' ? '✨ New' : '🏆 Winning'}</span>`).join(' ');
+  const saved = savedProductIds.has(p.id);
+  const badgeHtml = p.badges.map(b => `<span class="badge badge-${b}">${b === 'hot' ? '🔥 Hot' : b === 'trending' ? '📈 Trending' : b === 'new' ? '✨ New' : '🏆 Winning'}</span>`).join(' ');
 
-    document.getElementById('modalBody').innerHTML = `
+  document.getElementById('modalBody').innerHTML = `
     <img src="${p.image}" alt="${p.name}" class="modal-product-img">
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">${badgeHtml}</div>
     <div class="modal-stats-grid">
@@ -192,27 +222,18 @@ function openProductModal(productId) {
     </div>
   `;
 
-    openModal('productModal');
+  openModal('productModal');
 }
 
-function toggleSaveModal(productId) {
-    const product = PRODUCTS.find(p => p.id === productId);
-    const btn = document.getElementById('modalSaveBtn');
-    if (!product || !btn) return;
-
-    if (isProductSaved(productId)) {
-        removeProduct(productId);
-        btn.innerHTML = '💾 Save to My Store';
-        showToast('Removed from My Store', 'info', '🗑️');
-    } else {
-        saveProduct(product);
-        btn.innerHTML = '❤️ Saved to Store';
-    }
-    renderProducts();
+window.toggleSaveModal = async function (productId) {
+  await toggleSave(productId, null);
+  const btn = document.getElementById('modalSaveBtn');
+  if (btn) btn.innerHTML = savedProductIds.has(productId) ? '❤️ Saved to Store' : '💾 Save to My Store';
 }
 
-function handleModalClick(e) {
-    if (e.target === e.currentTarget) closeModal('productModal');
+window.handleModalClick = function (e) {
+  if (e.target === e.currentTarget) closeModal('productModal');
 }
 
 document.addEventListener('DOMContentLoaded', init);
+

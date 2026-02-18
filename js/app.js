@@ -1,15 +1,16 @@
 // ===== SHARED APP UTILITIES =====
+import { onAuthStateChanged } from './auth.js';
 
 // Theme Management
 const THEME_KEY = 'dropship_theme';
 
-function initTheme() {
+export function initTheme() {
   const saved = localStorage.getItem(THEME_KEY) || 'dark';
   document.documentElement.setAttribute('data-theme', saved);
   updateThemeIcon(saved);
 }
 
-function toggleTheme() {
+export function toggleTheme() {
   const current = document.documentElement.getAttribute('data-theme');
   const next = current === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
@@ -17,7 +18,7 @@ function toggleTheme() {
   updateThemeIcon(next);
 }
 
-function updateThemeIcon(theme) {
+export function updateThemeIcon(theme) {
   const btn = document.getElementById('themeToggle');
   if (btn) {
     btn.querySelector('.theme-icon').textContent = theme === 'dark' ? '☀️' : '🌙';
@@ -26,7 +27,7 @@ function updateThemeIcon(theme) {
 }
 
 // Sidebar Mobile Toggle
-function initSidebar() {
+export function initSidebar() {
   const hamburger = document.getElementById('hamburger');
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('sidebarOverlay');
@@ -47,7 +48,7 @@ function initSidebar() {
 }
 
 // Toast Notifications
-function showToast(message, type = 'info', icon = '') {
+export function showToast(message, type = 'info', icon = '') {
   const container = document.getElementById('toastContainer');
   if (!container) return;
 
@@ -63,71 +64,21 @@ function showToast(message, type = 'info', icon = '') {
   }, 3000);
 }
 
-// Saved Products (localStorage)
-const SAVED_KEY = 'dropship_saved_products';
-
-function getSavedProducts() {
-  try {
-    return JSON.parse(localStorage.getItem(SAVED_KEY)) || [];
-  } catch { return []; }
-}
-
-function saveProduct(product) {
-  const saved = getSavedProducts();
-  if (!saved.find(p => p.id === product.id)) {
-    saved.push({ ...product, savedAt: Date.now() });
-    localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
-    showToast(`"${product.name}" saved to My Store!`, 'success');
-    return true;
-  } else {
-    showToast('Product already in My Store', 'info');
-    return false;
-  }
-}
-
-function removeProduct(productId) {
-  const saved = getSavedProducts().filter(p => p.id !== productId);
-  localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
-}
-
-function isProductSaved(productId) {
-  return getSavedProducts().some(p => p.id === productId);
-}
-
-// Saved Ads
-const SAVED_ADS_KEY = 'dropship_saved_ads';
-
-function getSavedAds() {
-  try { return JSON.parse(localStorage.getItem(SAVED_ADS_KEY)) || []; }
-  catch { return []; }
-}
-
-function saveAd(ad) {
-  const saved = getSavedAds();
-  if (!saved.find(a => a.id === ad.id)) {
-    saved.push(ad);
-    localStorage.setItem(SAVED_ADS_KEY, JSON.stringify(saved));
-    showToast('Ad saved to collection!', 'success', '📌');
-  } else {
-    showToast('Ad already collected', 'info');
-  }
-}
-
 // Format numbers
-function formatNumber(n) {
+export function formatNumber(n) {
   if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
   if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
   return n.toString();
 }
 
-function formatCurrency(n) {
+export function formatCurrency(n) {
   if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
   if (n >= 1000) return '$' + (n / 1000).toFixed(1) + 'K';
   return '$' + n.toFixed(2);
 }
 
 // Sparkline generator
-function createSparkline(data) {
+export function createSparkline(data) {
   const max = Math.max(...data);
   return data.map(v => {
     const pct = Math.round((v / max) * 100);
@@ -136,18 +87,18 @@ function createSparkline(data) {
 }
 
 // Modal helpers
-function openModal(id) {
+export function openModal(id) {
   document.getElementById(id).classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-function closeModal(id) {
+export function closeModal(id) {
   document.getElementById(id).classList.remove('open');
   document.body.style.overflow = '';
 }
 
 // Set active nav item
-function setActiveNav() {
+export function setActiveNav() {
   const page = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.remove('active');
@@ -158,14 +109,96 @@ function setActiveNav() {
 }
 
 // Debounce
-function debounce(fn, delay = 300) {
+export function debounce(fn, delay = 300) {
   let t;
   return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
 }
+
+// Auth UI Updates
+function updateAuthUI(user) {
+  const avatar = document.querySelector('.avatar');
+  if (avatar) {
+    if (user) {
+      const initial = (user.displayName || user.email || 'U')[0].toUpperCase();
+      avatar.textContent = initial;
+      avatar.style.cursor = 'pointer';
+      avatar.title = user.displayName || user.email;
+      avatar.onclick = () => window.location.href = 'profile.html';
+    } else {
+      avatar.textContent = '?';
+      avatar.title = 'Sign In';
+      avatar.onclick = () => window.location.href = 'login.html';
+    }
+  }
+}
+
+// Data Persistence (Wrappers for DB helpers)
+import * as db from './db.js';
+import { getCurrentUser } from './auth.js';
+
+export async function getSavedProducts() {
+  const user = getCurrentUser();
+  if (user) return await db.getSavedProducts(user.uid);
+  try { return JSON.parse(localStorage.getItem('dropship_saved_products')) || []; } catch { return []; }
+}
+
+export async function saveProduct(product) {
+  const user = getCurrentUser();
+  if (user) {
+    await db.saveProduct(user.uid, product);
+    showToast(`"${product.name}" saved to cloud!`, 'success');
+    return true;
+  } else {
+    // Fallback to local storage for guests, but encourage login
+    const saved = JSON.parse(localStorage.getItem('dropship_saved_products') || '[]');
+    if (!saved.find(p => p.id === product.id)) {
+      saved.push({ ...product, savedAt: Date.now() });
+      localStorage.setItem('dropship_saved_products', JSON.stringify(saved));
+      showToast(`"${product.name}" saved locally! Sign in to sync.`, 'info');
+      return true;
+    }
+    showToast('Already in My Store', 'info');
+    return false;
+  }
+}
+
+export async function removeProduct(productId) {
+  const user = getCurrentUser();
+  if (user) await db.removeSavedProduct(user.uid, productId);
+  const local = JSON.parse(localStorage.getItem('dropship_saved_products') || '[]').filter(p => p.id !== productId);
+  localStorage.setItem('dropship_saved_products', JSON.stringify(local));
+}
+
+export async function isProductSaved(productId) {
+  const user = getCurrentUser();
+  if (user) return await db.isProductSaved(user.uid, productId);
+  return JSON.parse(localStorage.getItem('dropship_saved_products') || '[]').some(p => p.id === productId);
+}
+
+// Attach to window for global access (backward compatibility with legacy scripts)
+window.showToast = showToast;
+window.formatCurrency = formatCurrency;
+window.formatNumber = formatNumber;
+window.toggleTheme = toggleTheme;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.debounce = debounce;
+window.getSavedProducts = getSavedProducts;
+window.saveProduct = saveProduct;
+window.removeProduct = removeProduct;
+window.isProductSaved = isProductSaved;
 
 // Init on load
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initSidebar();
   setActiveNav();
+
+  // Global Auth State Listener
+  onAuthStateChanged((user) => {
+    updateAuthUI(user);
+    // If on a page that is not login.html and no user, we could redirect here, 
+    // but we'll use requireAuth() in specific page scripts for better control.
+  });
 });
+

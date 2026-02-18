@@ -1,14 +1,23 @@
 // ===== MY STORE PAGE =====
 
-function renderStore() {
-    const saved = getSavedProducts();
-    const searchVal = (document.getElementById('storeSearch')?.value || '').toLowerCase();
-    const filtered = searchVal ? saved.filter(p => p.name.toLowerCase().includes(searchVal) || p.niche.toLowerCase().includes(searchVal)) : saved;
+async function renderStore() {
+  const container = document.getElementById('storeContent');
+  if (!container) return;
 
-    const container = document.getElementById('storeContent');
+  // Show loading state
+  container.innerHTML = `
+      <div style="display:flex;justify-content:center;align-items:center;height:300px;flex-direction:column;gap:12px;">
+        <div class="spinner" style="width:40px;height:40px;border-width:4px;"></div>
+        <div style="color:var(--text-secondary);font-size:14px;">Syncing with cloud...</div>
+      </div>
+    `;
 
-    if (saved.length === 0) {
-        container.innerHTML = `
+  const saved = await getSavedProducts();
+  const searchVal = (document.getElementById('storeSearch')?.value || '').toLowerCase();
+  const filtered = searchVal ? saved.filter(p => p.name.toLowerCase().includes(searchVal) || p.niche.toLowerCase().includes(searchVal)) : saved;
+
+  if (saved.length === 0) {
+    container.innerHTML = `
       <div class="store-empty">
         <div class="store-empty-icon">🛒</div>
         <div class="store-empty-title">Your store is empty</div>
@@ -19,15 +28,15 @@ function renderStore() {
         </div>
       </div>
     `;
-        return;
-    }
+    return;
+  }
 
-    // Calculate totals
-    const totalRevenue = saved.reduce((sum, p) => sum + p.revenue, 0);
-    const avgMargin = Math.round(saved.reduce((sum, p) => sum + p.margin, 0) / saved.length);
-    const totalSales = saved.reduce((sum, p) => sum + p.monthlySales, 0);
+  // Calculate totals
+  const totalRevenue = saved.reduce((sum, p) => sum + (p.revenue || 0), 0);
+  const avgMargin = Math.round(saved.reduce((sum, p) => sum + (p.margin || 0), 0) / saved.length);
+  const totalSales = saved.reduce((sum, p) => sum + (p.monthlySales || 0), 0);
 
-    container.innerHTML = `
+  container.innerHTML = `
     <div class="section-header mb-4">
       <div>
         <div class="section-title">🛒 My Product List</div>
@@ -73,7 +82,7 @@ function renderStore() {
 }
 
 function renderSavedCard(p) {
-    return `
+  return `
     <div class="saved-card" id="card-${p.id}">
       <img src="${p.image}" alt="${p.name}" class="saved-img" loading="lazy">
       <div class="saved-body">
@@ -98,7 +107,7 @@ function renderSavedCard(p) {
           </div>
           <div class="calc-result">
             <span>Monthly Profit</span>
-            <span class="text-green" id="profit-${p.id}">$${((p.sellPrice - p.price - 5) * 100).toFixed(0)}</span>
+            <span class="text-green" id="profit-${p.id}">$${((p.sellPrice - (p.price || 0) - 5) * 100).toFixed(0)}</span>
           </div>
         </div>
 
@@ -112,53 +121,63 @@ function renderSavedCard(p) {
 }
 
 function calcProfit(productId, sellPrice, costPrice) {
-    const units = parseFloat(document.getElementById(`units-${productId}`)?.value || 100);
-    const adSpend = parseFloat(document.getElementById(`adspend-${productId}`)?.value || 5);
-    const profit = (sellPrice - costPrice - adSpend) * units;
-    const el = document.getElementById(`profit-${productId}`);
-    if (el) {
-        el.textContent = `$${Math.max(0, profit).toFixed(0)}`;
-        el.style.color = profit > 0 ? 'var(--accent-green)' : 'var(--accent-red)';
-    }
+  const units = parseFloat(document.getElementById(`units-${productId}`)?.value || 100);
+  const adSpend = parseFloat(document.getElementById(`adspend-${productId}`)?.value || 5);
+  const profit = (sellPrice - (costPrice || 0) - adSpend) * units;
+  const el = document.getElementById(`profit-${productId}`);
+  if (el) {
+    el.textContent = `$${Math.max(0, profit).toFixed(0)}`;
+    el.style.color = profit > 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+  }
 }
 
-function removeSaved(productId) {
-    removeProduct(productId);
-    showToast('Product removed from My Store', 'info', '🗑️');
+window.removeSaved = async function (productId) {
+  await removeProduct(productId);
+  showToast('Product removed from My Store', 'info', '🗑️');
+  renderStore();
+}
+
+window.clearAll = async function () {
+  if (confirm('Remove all saved products from My Store?')) {
+    const products = await getSavedProducts();
+    for (const p of products) {
+      await removeProduct(p.id);
+    }
+    localStorage.removeItem('dropship_saved_products');
+    showToast('All products removed', 'info', '🗑️');
     renderStore();
+  }
 }
 
-function clearAll() {
-    if (confirm('Remove all saved products from My Store?')) {
-        localStorage.removeItem('dropship_saved_products');
-        showToast('All products removed', 'info', '🗑️');
-        renderStore();
-    }
-}
+window.exportCSV = async function () {
+  const saved = await getSavedProducts();
+  if (saved.length === 0) { showToast('No products to export', 'error'); return; }
 
-function exportCSV() {
-    const saved = getSavedProducts();
-    if (saved.length === 0) { showToast('No products to export', 'error'); return; }
+  const headers = ['Name', 'Niche', 'Cost Price', 'Sell Price', 'Margin %', 'Monthly Sales', 'Monthly Revenue', 'Competition', 'Supplier'];
+  const rows = saved.map(p => [
+    `"${p.name}"`, p.niche, `$${p.price}`, `$${p.sellPrice}`, `${p.margin}%`,
+    p.monthlySales, `$${p.revenue}`, p.competition, p.supplier
+  ]);
 
-    const headers = ['Name', 'Niche', 'Cost Price', 'Sell Price', 'Margin %', 'Monthly Sales', 'Monthly Revenue', 'Competition', 'Supplier'];
-    const rows = saved.map(p => [
-        `"${p.name}"`, p.niche, `$${p.price}`, `$${p.sellPrice}`, `${p.margin}%`,
-        p.monthlySales, `$${p.revenue}`, p.competition, p.supplier
-    ]);
-
-    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'dropship-products.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast('CSV exported successfully!', 'success', '📥');
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'dropship-products.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV exported successfully!', 'success', '📥');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderStore();
-    const search = document.getElementById('storeSearch');
-    if (search) search.addEventListener('input', debounce(renderStore, 250));
+  // Check auth for this page specifically
+  import('./auth.js').then(({ requireAuth }) => {
+    requireAuth().then(() => {
+      renderStore();
+      const search = document.getElementById('storeSearch');
+      if (search) search.addEventListener('input', debounce(renderStore, 250));
+    });
+  });
 });
+

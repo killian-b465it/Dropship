@@ -1,56 +1,56 @@
 // ===== AD LIBRARY PAGE =====
 
 function initAds() {
-    // Populate niche filter
-    const nicheSelect = document.getElementById('filterNiche');
-    const niches = [...new Set(ADS.map(a => a.niche))];
-    niches.forEach(n => {
-        const opt = document.createElement('option');
-        opt.value = n;
-        opt.textContent = n;
-        nicheSelect.appendChild(opt);
-    });
+  // Populate niche filter
+  const nicheSelect = document.getElementById('filterNiche');
+  const niches = [...new Set(ADS.map(a => a.niche))];
+  niches.forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n;
+    opt.textContent = n;
+    nicheSelect.appendChild(opt);
+  });
 
-    document.getElementById('filterPlatform').addEventListener('change', renderAds);
-    document.getElementById('filterNiche').addEventListener('change', renderAds);
-    document.getElementById('filterEngagement').addEventListener('change', renderAds);
+  document.getElementById('filterPlatform').addEventListener('change', renderAds);
+  document.getElementById('filterNiche').addEventListener('change', renderAds);
+  document.getElementById('filterEngagement').addEventListener('change', renderAds);
 
-    renderAds();
+  renderAds();
 }
 
 function renderAds() {
-    const platform = document.getElementById('filterPlatform').value;
-    const niche = document.getElementById('filterNiche').value;
-    const engagement = document.getElementById('filterEngagement').value;
+  const platform = document.getElementById('filterPlatform').value;
+  const niche = document.getElementById('filterNiche').value;
+  const engagement = document.getElementById('filterEngagement').value;
 
-    const filtered = ADS.filter(a => {
-        if (platform && a.platform !== platform) return false;
-        if (niche && a.niche !== niche) return false;
-        if (engagement && a.engagement !== engagement) return false;
-        return true;
-    });
+  const filtered = ADS.filter(a => {
+    if (platform && a.platform !== platform) return false;
+    if (niche && a.niche !== niche) return false;
+    if (engagement && a.engagement !== engagement) return false;
+    return true;
+  });
 
-    document.getElementById('adsCount').textContent = `${filtered.length} ad${filtered.length !== 1 ? 's' : ''}`;
+  document.getElementById('adsCount').textContent = `${filtered.length} ad${filtered.length !== 1 ? 's' : ''}`;
 
-    const grid = document.getElementById('adsGrid');
+  const grid = document.getElementById('adsGrid');
 
-    if (filtered.length === 0) {
-        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
       <div class="empty-state-icon">📢</div>
       <div class="empty-state-title">No ads match your filters</div>
       <div class="empty-state-text">Try adjusting the filters above</div>
     </div>`;
-        return;
-    }
+    return;
+  }
 
-    grid.innerHTML = filtered.map(ad => {
-        const platformIcon = ad.platform === 'facebook' ? '📘' : '🎵';
-        const platformLabel = ad.platform === 'facebook' ? 'Facebook' : 'TikTok';
-        const platformBadge = ad.platform === 'facebook' ? 'badge-facebook' : 'badge-tiktok';
-        const engClass = ad.engagement === 'Very High' ? 'eng-very-high' : ad.engagement === 'High' ? 'eng-high' : 'eng-medium';
-        const engIcon = ad.engagement === 'Very High' ? '🔥' : ad.engagement === 'High' ? '📈' : '📊';
+  grid.innerHTML = filtered.map(ad => {
+    const platformIcon = ad.platform === 'facebook' ? '📘' : '🎵';
+    const platformLabel = ad.platform === 'facebook' ? 'Facebook' : 'TikTok';
+    const platformBadge = ad.platform === 'facebook' ? 'badge-facebook' : 'badge-tiktok';
+    const engClass = ad.engagement === 'Very High' ? 'eng-very-high' : ad.engagement === 'High' ? 'eng-high' : 'eng-medium';
+    const engIcon = ad.engagement === 'Very High' ? '🔥' : ad.engagement === 'High' ? '📈' : '📊';
 
-        return `
+    return `
       <div class="ad-card">
         <div style="position:relative;">
           <img src="${ad.thumbnail}" alt="Ad thumbnail" class="ad-img" loading="lazy">
@@ -89,12 +89,15 @@ function renderAds() {
         </div>
       </div>
     `;
-    }).join('');
+  }).join('');
 }
 
-function collectAd(adId) {
-    const ad = ADS.find(a => a.id === adId);
-    if (ad) saveAd(ad);
+window.collectAd = function (adId) {
+  const ad = ADS.find(a => a.id === adId);
+  if (ad) {
+    // For now, using the same logic as products or just toast
+    showToast('Ad collected!', 'success', '📌');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', initAds);

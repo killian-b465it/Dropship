@@ -459,42 +459,8 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
-  <script>
-    // Update saved count
-    document.getElementById('statSaved').textContent = getSavedProducts().length;
-
-    // Global search redirect
-    document.getElementById('globalSearch').addEventListener('keydown', e => {
-      if (e.key === 'Enter' && e.target.value.trim()) {
-        window.location.href = `products.html?search=${encodeURIComponent(e.target.value.trim())}`;
-      }
-    });
-
-    // Save product of the day
-    function savePOD() {
-      const pod = PRODUCTS.find(p => p.id === 6);
-      if (pod) {
-        saveProduct(pod);
-        document.getElementById('statSaved').textContent = getSavedProducts().length;
-      }
-    }
-
-    // Render top niches
-    const topNiches = NICHES_DATA.sort((a, b) => b.trendScore - a.trendScore).slice(0, 4);
-    document.getElementById('topNiches').innerHTML = topNiches.map(n => `
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
-        <div style="font-size:22px;">${n.icon}</div>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:600;">${n.name}</div>
-          <div class="progress-bar" style="margin-top:4px;">
-            <div class="progress-fill" style="width:${n.trendScore}%"></div>
-          </div>
-        </div>
-        <div style="font-size:12px;font-weight:700;color:var(--accent-green);">${n.growth}</div>
-      </div>
-    `).join('').replace(/border-bottom:1px solid var\(--border\);">(?=[^<]*<\/div>\s*<\/div>\s*$)/, '>');
-  </script>
+  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/index_page.js"></script>
 </body>
 
 </html>

@@ -1,39 +1,39 @@
 // ===== COMPETITOR ANALYSIS PAGE =====
 
-function searchStore() {
-    const input = document.getElementById('storeInput').value.trim().toLowerCase();
-    if (!input) { showToast('Please enter a store name', 'error'); return; }
+window.searchStore = function () {
+  const input = document.getElementById('storeInput').value.trim().toLowerCase();
+  if (!input) { showToast('Please enter a store name', 'error'); return; }
 
-    // Find matching store
-    const key = Object.keys(MOCK_STORES).find(k => k.includes(input) || input.includes(k));
-    if (key) {
-        loadStore(key);
-    } else {
-        showToast('Store not found. Try: gymshark, petparadise, techzone, glowskin', 'error', '🏪');
-    }
+  // Find matching store
+  const key = Object.keys(MOCK_STORES).find(k => k.includes(input) || input.includes(k));
+  if (key) {
+    loadStore(key);
+  } else {
+    showToast('Store not found. Try: gymshark, petparadise, techzone, glowskin', 'error', '🏪');
+  }
 }
 
 function loadStore(key) {
-    document.getElementById('storeInput').value = key;
-    const store = MOCK_STORES[key];
-    if (!store) return;
+  document.getElementById('storeInput').value = key;
+  const store = MOCK_STORES[key];
+  if (!store) return;
 
-    showToast(`Analyzing ${store.name}...`, 'info', '🔍');
+  showToast(`Analyzing ${store.name}...`, 'info', '🔍');
 
-    setTimeout(() => {
-        renderStoreResult(store);
-        showToast('Analysis complete!', 'success', '✅');
-    }, 800);
+  setTimeout(() => {
+    renderStoreResult(store);
+    showToast('Analysis complete!', 'success', '✅');
+  }, 800);
 }
 
 function renderStoreResult(store) {
-    const result = document.getElementById('storeResult');
-    result.classList.add('show');
+  const result = document.getElementById('storeResult');
+  result.classList.add('show');
 
-    const trafficColors = { organic: '#10b981', paid: '#7c3aed', social: '#06b6d4', direct: '#f59e0b' };
-    const trafficLabels = { organic: '🌿 Organic', paid: '💰 Paid Ads', social: '📱 Social', direct: '🔗 Direct' };
+  const trafficColors = { organic: '#10b981', paid: '#7c3aed', social: '#06b6d4', direct: '#f59e0b' };
+  const trafficLabels = { organic: '🌿 Organic', paid: '💰 Paid Ads', social: '📱 Social', direct: '🔗 Direct' };
 
-    result.innerHTML = `
+  result.innerHTML = `
     <!-- Store Header -->
     <div class="store-header">
       <div class="store-avatar">🏪</div>
@@ -124,5 +124,5 @@ function renderStoreResult(store) {
     </div>
   `;
 
-    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  result.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }

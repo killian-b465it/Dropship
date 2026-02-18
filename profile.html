@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile — DropLaunch</title>
+    <meta name="description" content="Manage your DropLaunch account profile and settings.">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .profile-hero {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -5%;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .profile-avatar-lg {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-teal));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+            border: 3px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .profile-email {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .profile-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(124, 58, 237, 0.15);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-purple-light);
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 700px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-hero {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .profile-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .profile-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+
+        .form-input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-row-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .stat-row-val {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .danger-zone {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .danger-zone .profile-card-title {
+            color: var(--accent-red);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--accent-red);
+            border-radius: 10px;
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .member-since {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay-bg" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">🚀</div><span class="logo-text">DropLaunch</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Research</div>
+            <a href="index.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+            <a href="products.html" class="nav-item"><span class="nav-icon">🔍</span> Product Research</a>
+            <a href="winning.html" class="nav-item"><span class="nav-icon">🔥</span> Winning Products <span
+                    class="nav-badge">HOT</span></a>
+            <a href="niche.html" class="nav-item"><span class="nav-icon">🎯</span> Niche Finder</a>
+            <div class="nav-section-label">Intelligence</div>
+            <a href="competitors.html" class="nav-item"><span class="nav-icon">🏪</span> Competitor Analysis</a>
+            <a href="ads.html" class="nav-item"><span class="nav-icon">📢</span> Ad Library</a>
+            <div class="nav-section-label">My Business</div>
+            <a href="store-setup.html" class="nav-item"><span class="nav-icon">🔗</span> Store Setup</a>
+            <a href="suppliers.html" class="nav-item"><span class="nav-icon">📦</span> Suppliers</a>
+            <a href="orders.html" class="nav-item"><span class="nav-icon">🚚</span> Orders</a>
+            <a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a>
+            <a href="mystore.html" class="nav-item"><span class="nav-icon">🛒</span> My Store</a>
+            <a href="calculator.html" class="nav-item"><span class="nav-icon">🧮</span> Calculator</a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                <span class="nav-icon theme-icon">☀️</span><span class="theme-label">Light Mode</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            <h1 class="topbar-title">My Profile</h1>
+            <div class="topbar-search"><input type="text" placeholder="Search..."></div>
+            <div class="topbar-actions">
+                <button class="btn-icon">🔔</button>
+                <div class="avatar" id="topbarAvatar" style="cursor:pointer;"
+                    onclick="window.location.href='profile.html'">D</div>
+            </div>
+        </header>
+
+        <main class="page-content" id="pageContent" style="display:none;">
+            <!-- Profile Hero -->
+            <div class="profile-hero">
+                <div class="profile-avatar-lg" id="avatarLg">D</div>
+                <div class="profile-info">
+                    <div class="profile-name" id="profileName">Loading...</div>
+                    <div class="profile-email" id="profileEmail"></div>
+                    <div class="member-since" id="memberSince"></div>
+                    <div class="profile-badge">🚀 Free Plan</div>
+                </div>
+                <button class="btn btn-secondary" onclick="handleLogout()" style="flex-shrink:0;">Sign Out</button>
+            </div>
+
+            <div class="profile-grid">
+                <!-- Edit Profile -->
+                <div class="profile-card">
+                    <div class="profile-card-title">✏️ Edit Profile</div>
+                    <div class="form-group">
+                        <label class="form-label">Display Name</label>
+                        <input type="text" class="form-input" id="editName" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="text" class="form-input" id="editEmail" disabled>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveProfile()">💾 Save Changes</button>
+                </div>
+
+                <!-- Account Stats -->
+                <div class="profile-card">
+                    <div class="profile-card-title">📊 Account Stats</div>
+                    <div class="stat-row">
+                        <span class="stat-row-label">💾 Saved Products</span>
+                        <span class="stat-row-val text-purple" id="statSaved">—</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-row-label">🚚 Total Orders</span>
+                        <span class="stat-row-val text-teal" id="statOrders">—</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-row-label">📦 Connected Suppliers</span>
+                        <span class="stat-row-val text-green" id="statSuppliers">—</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-row-label">🎯 Plan</span>
+                        <span class="stat-row-val">Free</span>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="profile-card">
+                    <div class="profile-card-title">⚡ Quick Actions</div>
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <a href="mystore.html" class="btn btn-secondary" style="text-align:center;">🛒 View My Store</a>
+                        <a href="orders.html" class="btn btn-secondary" style="text-align:center;">🚚 Manage Orders</a>
+                        <a href="suppliers.html" class="btn btn-secondary" style="text-align:center;">📦 Connect
+                            Suppliers</a>
+                        <a href="calculator.html" class="btn btn-secondary" style="text-align:center;">🧮 Profit
+                            Calculator</a>
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="profile-card danger-zone">
+                    <div class="profile-card-title">⚠️ Danger Zone</div>
+                    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6;">
+                        Signing out will end your current session. Your data is safely stored in the cloud.
+                    </p>
+                    <button class="btn-danger" onclick="handleLogout()" style="width:100%;margin-bottom:10px;">🚪 Sign
+                        Out</button>
+                    <button class="btn-danger" onclick="confirmDelete()" style="width:100%;opacity:0.7;">🗑️ Delete
+                        Account</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="js/data.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script type="module">
+        import { requireAuth, logout } from './js/auth.js';
+        import { getUserProfile, updateUserProfile, getSavedProducts, getOrders, getConnectedSuppliers } from './js/db.js';
+        import { updateProfile, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { auth } from './js/firebase-config.js';
+
+        let currentUser = null;
+
+        async function init() {
+            currentUser = await requireAuth();
+
+            // Populate topbar avatar
+            const initial = (currentUser.displayName || currentUser.email || 'U')[0].toUpperCase();
+            document.getElementById('topbarAvatar').textContent = initial;
+            document.getElementById('avatarLg').textContent = initial;
+
+            // Load profile
+            const profile = await getUserProfile(currentUser.uid);
+            const name = currentUser.displayName || profile?.displayName || 'Dropshipper';
+            document.getElementById('profileName').textContent = name;
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            document.getElementById('editName').value = name;
+            document.getElementById('editEmail').value = currentUser.email;
+
+            if (currentUser.metadata?.creationTime) {
+                const d = new Date(currentUser.metadata.creationTime);
+                document.getElementById('memberSince').textContent = `Member since ${d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+            }
+
+            // Load stats in parallel
+            const [saved, orders, suppliers] = await Promise.all([
+                getSavedProducts(currentUser.uid),
+                getOrders(currentUser.uid),
+                getConnectedSuppliers(currentUser.uid)
+            ]);
+            document.getElementById('statSaved').textContent = saved.length;
+            document.getElementById('statOrders').textContent = orders.length;
+            document.getElementById('statSuppliers').textContent = suppliers.length;
+
+            document.getElementById('pageContent').style.display = 'block';
+        }
+
+        window.saveProfile = async function () {
+            const name = document.getElementById('editName').value.trim();
+            if (!name) return showToast('Please enter a display name.', 'error');
+            try {
+                await updateProfile(currentUser, { displayName: name });
+                await updateUserProfile(currentUser.uid, { displayName: name });
+                document.getElementById('profileName').textContent = name;
+                document.getElementById('avatarLg').textContent = name[0].toUpperCase();
+                document.getElementById('topbarAvatar').textContent = name[0].toUpperCase();
+                showToast('Profile updated!', 'success');
+            } catch (e) {
+                showToast('Failed to update profile.', 'error');
+            }
+        };
+
+        window.handleLogout = async function () {
+            const { logout } = await import('./js/auth.js');
+            await logout();
+        };
+
+        window.confirmDelete = function () {
+            if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+                deleteUser(currentUser).then(() => {
+                    window.location.href = '/login.html';
+                }).catch(() => {
+                    showToast('Please sign out and sign back in before deleting your account.', 'error');
+                });
+            }
+        };
+
+        function showToast(msg, type) {
+            if (typeof window.showToast === 'function') window.showToast(msg, type);
+            else alert(msg);
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
