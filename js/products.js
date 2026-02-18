@@ -1,5 +1,5 @@
 // ===== PRODUCT RESEARCH PAGE =====
-import { getSavedProducts, saveProduct, removeProduct, isProductSaved } from './app.js';
+import { getSavedProducts, saveProduct, removeProduct, isProductSaved, placeOrder, formatCurrency, formatNumber, createSparkline, showToast, debounce, openModal, closeModal } from './app.js';
 
 let currentSort = 'revenue';
 let currentProducts = [...PRODUCTS];
@@ -171,6 +171,14 @@ window.toggleSave = async function (productId, btn) {
   });
 }
 
+window.handlePlaceOrder = async function (productId) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  if (product) {
+    const success = await placeOrder(product);
+    if (success) closeModal('productModal');
+  }
+}
+
 window.openProductModal = async function (productId) {
   const p = PRODUCTS.find(prod => prod.id === productId);
   if (!p) return;
@@ -215,10 +223,13 @@ window.openProductModal = async function (productId) {
     </div>
     <div class="tags-wrap">${p.tags.map(t => `<span class="tag tag-purple">#${t}</span>`).join('')}</div>
     <div style="display:flex;gap:10px;margin-top:20px;">
-      <button class="btn btn-primary" style="flex:1" onclick="toggleSaveModal(${p.id})" id="modalSaveBtn">
-        ${saved ? '❤️ Saved to Store' : '💾 Save to My Store'}
+      <button class="btn btn-primary" style="flex:1" onclick="handlePlaceOrder(${p.id})">📦 Place Test Order</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="toggleSaveModal(${p.id})" id="modalSaveBtn">
+        ${saved ? '❤️ Saved' : '💾 Save to Store'}
       </button>
-      <a href="https://www.aliexpress.com/wholesale?SearchText=${encodeURIComponent(p.name)}" target="_blank" class="btn btn-teal">🔗 Find Supplier</a>
+    </div>
+    <div style="margin-top:10px;">
+      <a href="https://www.aliexpress.com/wholesale?SearchText=${encodeURIComponent(p.name)}" target="_blank" class="btn btn-teal btn-full">🔗 Find Supplier on AliExpress</a>
     </div>
   `;
 

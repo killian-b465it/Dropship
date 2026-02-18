@@ -1,5 +1,5 @@
-// ===== SUPPLIERS PAGE =====
 import { requireAuth } from './auth.js';
+import { getConnectedSuppliers, setConnectedSuppliers, showToast, openModal, closeModal } from './app.js';
 import * as db from './db.js';
 
 const SUPPLIERS_DATA = [
@@ -104,16 +104,12 @@ const SUPPLIERS_DATA = [
 let currentConnected = [];
 
 async function init() {
-  const user = await requireAuth();
-  currentConnected = await db.getConnectedSuppliers(user.uid);
+  await requireAuth();
+  currentConnected = await getConnectedSuppliers();
   renderSuppliers();
 }
 
 async function toggleConnect(supplierId) {
-  const { getCurrentUser } = await import('./auth.js');
-  const user = getCurrentUser();
-  if (!user) return;
-
   const idx = currentConnected.indexOf(supplierId);
   if (idx > -1) {
     currentConnected.splice(idx, 1);
@@ -123,7 +119,7 @@ async function toggleConnect(supplierId) {
     showToast('Supplier connected!', 'success', '🔗');
   }
 
-  await db.setConnectedSuppliers(user.uid, currentConnected);
+  await setConnectedSuppliers(currentConnected);
   renderSuppliers();
 }
 window.toggleConnect = toggleConnect;

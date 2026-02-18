@@ -175,6 +175,53 @@ export async function isProductSaved(productId) {
   return JSON.parse(localStorage.getItem('dropship_saved_products') || '[]').some(p => p.id === productId);
 }
 
+export async function placeOrder(product) {
+  const user = getCurrentUser();
+  if (!user) {
+    showToast('Please sign in to place orders', 'error');
+    return null;
+  }
+  const order = {
+    productName: product.name,
+    productId: product.id,
+    customer: 'Test Customer',
+    total: product.sellPrice,
+    status: 'processing',
+    image: product.image
+  };
+  const id = await db.addOrder(user.uid, order);
+  showToast(`Order for "${product.name}" placed!`, 'success', '🚚');
+  return id;
+}
+
+export async function getOrders() {
+  const user = getCurrentUser();
+  if (user) return await db.getOrders(user.uid);
+  return [];
+}
+
+export async function getConnectedSuppliers() {
+  const user = getCurrentUser();
+  if (user) return await db.getConnectedSuppliers(user.uid);
+  return [];
+}
+
+export async function setConnectedSuppliers(connectedArray) {
+  const user = getCurrentUser();
+  if (user) return await db.setConnectedSuppliers(user.uid, connectedArray);
+}
+
+export async function collectAd(ad) {
+  const user = getCurrentUser();
+  if (user) {
+    await db.saveAd(user.uid, ad);
+    showToast('Ad collected to your cloud profile!', 'success', '📌');
+    return true;
+  }
+  showToast('Ad collected locally!', 'info', '📌');
+  return false;
+}
+
 // Attach to window for global access (backward compatibility with legacy scripts)
 window.showToast = showToast;
 window.formatCurrency = formatCurrency;
@@ -187,6 +234,11 @@ window.getSavedProducts = getSavedProducts;
 window.saveProduct = saveProduct;
 window.removeProduct = removeProduct;
 window.isProductSaved = isProductSaved;
+window.placeOrder = placeOrder;
+window.getOrders = getOrders;
+window.getConnectedSuppliers = getConnectedSuppliers;
+window.setConnectedSuppliers = setConnectedSuppliers;
+window.collectAd = collectAd;
 
 // Init on load
 document.addEventListener('DOMContentLoaded', () => {

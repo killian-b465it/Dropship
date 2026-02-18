@@ -81,3 +81,17 @@ export async function setConnectedSuppliers(uid, connectedArray) {
         updatedAt: serverTimestamp()
     });
 }
+
+// ── Collected Ads ─────────────────────────────────────────────
+
+export async function getAds(uid) {
+    const snap = await getDocs(collection(db, 'users', uid, 'collectedAds'));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function saveAd(uid, ad) {
+    await setDoc(doc(db, 'users', uid, 'collectedAds', String(ad.id)), {
+        ...ad,
+        collectedAt: serverTimestamp()
+    });
+}

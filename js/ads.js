@@ -1,8 +1,10 @@
 // ===== AD LIBRARY PAGE =====
+import { collectAd } from './app.js';
 
 function initAds() {
   // Populate niche filter
   const nicheSelect = document.getElementById('filterNiche');
+  if (!nicheSelect) return;
   const niches = [...new Set(ADS.map(a => a.niche))];
   niches.forEach(n => {
     const opt = document.createElement('option');
@@ -30,9 +32,11 @@ function renderAds() {
     return true;
   });
 
-  document.getElementById('adsCount').textContent = `${filtered.length} ad${filtered.length !== 1 ? 's' : ''}`;
+  const countEl = document.getElementById('adsCount');
+  if (countEl) countEl.textContent = `${filtered.length} ad${filtered.length !== 1 ? 's' : ''}`;
 
   const grid = document.getElementById('adsGrid');
+  if (!grid) return;
 
   if (filtered.length === 0) {
     grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
@@ -92,12 +96,12 @@ function renderAds() {
   }).join('');
 }
 
-window.collectAd = function (adId) {
+window.collectAd = async function (adId) {
   const ad = ADS.find(a => a.id === adId);
   if (ad) {
-    // For now, using the same logic as products or just toast
-    showToast('Ad collected!', 'success', '📌');
+    await collectAd(ad);
   }
 }
 
 document.addEventListener('DOMContentLoaded', initAds);
+

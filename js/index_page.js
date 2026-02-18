@@ -1,11 +1,27 @@
 // ===== DASHBOARD PAGE =====
-import { getSavedProducts, saveProduct } from './app.js';
+import { getSavedProducts, saveProduct, getOrders, getConnectedSuppliers, formatCurrency } from './app.js';
 import { onAuthStateChanged } from './auth.js';
 
 async function refreshStats() {
-    const saved = await getSavedProducts();
-    const statSavedEl = document.getElementById('statSaved');
-    if (statSavedEl) statSavedEl.textContent = saved.length;
+    const [saved, orders, suppliers] = await Promise.all([
+        getSavedProducts(),
+        getOrders(),
+        getConnectedSuppliers()
+    ]);
+
+    const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+
+    const elSaved = document.getElementById('statSaved');
+    const elRevenue = document.querySelector('.kpi-card:nth-child(1) .kpi-val');
+    const elOrders = document.querySelector('.kpi-card:nth-child(2) .kpi-val');
+    const elSuppliers = document.querySelector('.kpi-card:nth-child(3) .kpi-val');
+
+    if (elSaved) elSaved.textContent = saved.length;
+    if (elRevenue) elRevenue.textContent = formatCurrency(totalRevenue);
+    if (elOrders) elOrders.textContent = orders.length;
+    if (elSuppliers) elSuppliers.textContent = suppliers.length;
+
+    // Update charts if they exist (simplification for MVP: just static for now but with real totals)
 }
 
 window.savePOD = async function () {
@@ -46,8 +62,9 @@ async function init() {
     }
 
     onAuthStateChanged(async (user) => {
-        await refreshStats();
+        if (user) await refreshStats();
     });
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
